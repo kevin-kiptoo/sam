@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For My Universe</title>
+    <style>
+        :root {
+            --primary-pink: #ff4d6d;
+            --glow-color: #ffb3c1;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+
+        /* --- Starry Background --- */
+        #stars-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        /* --- Floating Elements --- */
+        .heart, .petal {
+            position: absolute;
+            pointer-events: none;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+
+        /* --- Main Card --- */
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 30px rgba(255, 77, 109, 0.3);
+            width: 90%;
+            max-width: 400px;
+            z-index: 10;
+        }
+
+        .name-glow {
+            font-size: 3rem;
+            font-weight: bold;
+            color: white;
+            text-shadow: 0 0 10px #fff, 0 0 20px var(--primary-pink), 0 0 30px var(--primary-pink);
+            margin-bottom: 10px;
+            animation: sparkle 1.5s infinite alternate;
+        }
+
+        @keyframes sparkle {
+            from { opacity: 0.8; transform: scale(1); }
+            to { opacity: 1; transform: scale(1.05); }
+        }
+
+        .photo-frame {
+            width: 150px;
+            height: 150px;
+            margin: 20px auto;
+            border-radius: 50%;
+            border: 4px solid var(--primary-pink);
+            overflow: hidden;
+            box-shadow: 0 0 20px var(--primary-pink);
+        }
+
+        .photo-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        #typewriter {
+            font-size: 1.2rem;
+            height: 60px;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        /* --- Buttons --- */
+        .btn-group {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            position: relative;
+        }
+
+        button {
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        #yesBtn {
+            background: var(--primary-pink);
+            color: white;
+            box-shadow: 0 0 15px var(--primary-pink);
+        }
+
+        #noBtn {
+            background: #444;
+            color: white;
+            position: relative;
+        }
+
+        /* --- Canvas for Fireworks --- */
+        #fireworks {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 99;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="fireworks"></canvas>
+    <div id="stars-container"></div>
+    
+    <audio id="bgMusic" loop>
+        <source src="romance.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="container">
+        <div class="name-glow">Rukiyah</div>
+        
+        <div class="photo-frame">
+            <img src="/valentine/rukiyah.jpg" alt="Our Memory">
+        </div>
+
+        <div id="typewriter"></div>
+
+        <div class="btn-group">
+            <button id="yesBtn" onclick="celebrate()">YES! ❤️</button>
+            <button id="noBtn" onmouseover="moveNoButton()" onclick="moveNoButton()">No</button>
+        </div>
+    </div>
+
+    <script>
+        // 1. Starry Background Generator
+        function createStars() {
+            const container = document.getElementById('stars-container');
+            for (let i = 0; i < 150; i++) {
+                const star = document.createElement('div');
+                star.style.position = 'absolute';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.width = Math.random() * 3 + 'px';
+                star.style.height = star.style.width;
+                star.style.background = 'white';
+                star.style.borderRadius = '50%';
+                star.style.opacity = Math.random();
+                star.style.boxShadow = `0 0 ${Math.random() * 10}px white`;
+                container.appendChild(star);
+            }
+        }
+
+        // 2. Falling Hearts/Petals
+        function createFallingElements() {
+            const symbols = ['💖', '🌹', '✨', '🌸'];
+            setInterval(() => {
+                const el = document.createElement('div');
+                el.className = 'heart';
+                el.innerHTML = symbols[Math.floor(Math.random() * symbols.length)];
+                el.style.left = Math.random() * 100 + 'vw';
+                el.style.fontSize = Math.random() * 20 + 10 + 'px';
+                el.style.animationDuration = Math.random() * 3 + 2 + 's';
+                document.body.appendChild(el);
+                setTimeout(() => el.remove(), 5000);
+            }, 300);
+        }
+
+        // 3. Typewriter Effect
+        const text = "In a galaxy full of stars, you're the only one I see. Rukiyah, will you be my Valentine?";
+        let index = 0;
+        function typeWriter() {
+            if (index < text.length) {
+                document.getElementById("typewriter").innerHTML += text.charAt(index);
+                index++;
+                setTimeout(typeWriter, 70);
+            }
+        }
+
+        // 4. Running No Button
+        function moveNoButton() {
+            const x = Math.random() * (window.innerWidth - 100);
+            const y = Math.random() * (window.innerHeight - 50);
+            const noBtn = document.getElementById('noBtn');
+            noBtn.style.position = 'fixed';
+            noBtn.style.left = x + 'px';
+            noBtn.style.top = y + 'px';
+            
+            document.getElementById('bgMusic').play();
+        }
+
+        // 5. Success Celebration (Updated with 3-second photo delay)
+        function celebrate() {
+            const container = document.querySelector('.container');
+            container.innerHTML = "<h1 class='name-glow'>Yay! ❤️</h1>";
+            startFireworks();
+
+            // After 3 seconds, display the photo elegantly
+            setTimeout(() => {
+                container.innerHTML = `
+                    <h1 class='name-glow'>See you then!</h1>
+                    <div class="photo-frame" style="animation: sparkle 2s infinite alternate;">
+                        <img src="WhatsApp Image 2026-02-13 at 10.52.42.jpeg" alt="Our Memory">
+                    </div>
+                    <p style="font-size: 1.2rem;">I love you to the moon and back.</p>
+                `;
+            }, 30);
+        }
+
+        // 6. Fireworks Logic
+        function startFireworks() {
+            const canvas = document.getElementById('fireworks');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            
+            let particles = [];
+            function Particle(x, y) {
+                this.x = x; this.y = y;
+                this.destX = (Math.random() - 0.5) * 15;
+                this.destY = (Math.random() - 0.5) * 15;
+                this.color = `hsl(${Math.random() * 360}, 100%, 70%)`;
+                this.life = 100;
+            }
+
+            const fireworkInterval = setInterval(() => {
+                const randomX = Math.random() * canvas.width;
+                const randomY = Math.random() * (canvas.height / 2);
+                for(let i=0; i<60; i++) particles.push(new Particle(randomX, randomY));
+            }, 600);
+
+            function animate() {
+                ctx.fillStyle = 'rgba(0,0,0,0.15)';
+                ctx.fillRect(0,0,canvas.width, canvas.height);
+                particles.forEach((p, i) => {
+                    p.x += p.destX; p.y += p.destY; p.life--;
+                    ctx.fillStyle = p.color;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
+                    ctx.fill();
+                    if(p.life <= 0) particles.splice(i, 1);
+                });
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+
+        createStars();
+        createFallingElements();
+        window.onload = typeWriter;
+    </script>
+</body>
+</html>
